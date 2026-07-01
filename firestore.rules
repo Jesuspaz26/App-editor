@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && 
+             (request.auth.token.email == "paiemae269@gmail.com" || request.auth.uid == "kiI0msC5x9PC4utR7o9AzFA1SD12") && 
+             request.auth.token.email_verified == true;
+    }
+
+    function isValidInspiration(data) {
+      return data.keys().hasAll(['id', 'niche', 'classification', 'content', 'createdAt']) &&
+             data.id is string &&
+             data.niche is string &&
+             data.classification is string &&
+             data.content is string &&
+             data.createdAt is number;
+    }
+
+    function isValidLanguagePattern(data) {
+      return data.keys().hasAll(['id', 'niche', 'style', 'content', 'createdAt']) &&
+             data.id is string &&
+             data.niche is string &&
+             data.style is string &&
+             data.content is string &&
+             data.createdAt is number;
+    }
+
+    match /inspirations/{inspirationId} {
+      // Everyone can read global inspirations
+      allow read: if true;
+      
+      // Only admin can create/update/delete global inspirations
+      allow create: if isAdmin() && isValidInspiration(request.resource.data);
+      allow update: if isAdmin() && isValidInspiration(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /language_patterns/{patternId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidLanguagePattern(request.resource.data);
+      allow update: if isAdmin() && isValidLanguagePattern(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /global_history/{historyId} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+  }
+}

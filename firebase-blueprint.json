@@ -1,0 +1,106 @@
+{
+  "entities": {
+    "Inspiration": {
+      "title": "Inspiration",
+      "description": "A script inspiration used to train the AI tone.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "niche": { "type": "string" },
+        "classification": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "isGlobal": { "type": "boolean", "description": "If true, this inspiration is shared with all users." },
+        "authorId": { "type": "string", "description": "The UID of the user who created this." }
+      },
+      "required": ["id", "niche", "classification", "content", "createdAt"]
+    },
+    "UserNiches": {
+      "title": "User Niches",
+      "type": "object",
+      "properties": {
+        "niches": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["niches"]
+    },
+    "VideoProject": {
+      "title": "Video Project",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "scriptId": { "type": "string" },
+        "title": { "type": "string" },
+        "previewUrl": { "type": "string" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["id", "scriptId", "title", "updatedAt"]
+    },
+    "LanguagePattern": {
+      "title": "Language Pattern",
+      "description": "A specific phrasing or stylistic pattern used for training.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "niche": { "type": "string" },
+        "style": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "isGlobal": { "type": "boolean" }
+      },
+      "required": ["id", "niche", "style", "content", "createdAt"]
+    },
+    "SEOMetadata": {
+      "title": "SEO Metadata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "content": { "type": "string" },
+        "titles": { "type": "array", "items": { "type": "string" } },
+        "description": { "type": "string" },
+        "keywords": { "type": "array", "items": { "type": "string" } },
+        "thumbnailPrompt": { "type": "string" },
+        "thumbUrl": { "type": "string" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["id", "content", "titles", "description", "keywords", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/inspirations/{inspirationId}": {
+      "schema": "Inspiration",
+      "description": "Global base of training scripts."
+    },
+    "/users/{userId}/niches/main": {
+      "schema": "UserNiches",
+      "description": "User's custom list of niche choices."
+    },
+    "/users/{userId}/history/{historyId}": {
+      "schema": "object",
+      "description": "User's generated script history."
+    },
+    "/users/{userId}/studio/{projectId}": {
+      "schema": "VideoProject",
+      "description": "User's video projects in the studio."
+    },
+    "/users/{userId}/inspirations/{inspirationId}": {
+      "schema": "Inspiration",
+      "description": "User's private training scripts."
+    },
+    "/users/{userId}/seo/{seoId}": {
+      "schema": "SEOMetadata",
+      "description": "User's saved SEO optimizations."
+    },
+    "/global_history/{historyId}": {
+      "schema": "object",
+      "description": "Publicly shared generated scripts."
+    },
+    "/language_patterns/{patternId}": {
+      "schema": "LanguagePattern",
+      "description": "Global language training patterns."
+    },
+    "/users/{userId}/language_patterns/{patternId}": {
+      "schema": "LanguagePattern",
+      "description": "User's private language training patterns."
+    }
+  }
+}
